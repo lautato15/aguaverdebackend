@@ -1,13 +1,17 @@
 const express = require("express");
 const { google } = require("googleapis");
 const app = express();
+require("dotenv").config();
 
 app.use(express.json());
 
 // Configura tu cliente OAuth 2.0 con tus credenciales
+console.log("EEEEL URIII");
+console.log(process.env.REDIRECT_URI);
 const oauth2Client = new google.auth.OAuth2(
-
-  "http://localhost:3000/auth/callback" // URI de redirección autorizada
+  process.env.CLIENT_ID, // ID de cliente de Google
+  process.env.CLIENT_SECRET, // Secreto de cliente
+  process.env.REDIRECT_URI // URI de redirección autorizada
 );
 
 app.get("/auth", (req, res) => {
@@ -44,6 +48,11 @@ app.post("/modify-contacts", async (req, res) => {
       },
     });
 
+    // Verificar si el contacto se creó exitosamente
+    console.log("Contacto creado:");
+    console.log(contact.data);
+
+    console.log("HOLA");
     // Listar todos los grupos para encontrar el que coincide con `groupName`
     const groupsResponse = await people.contactGroups.list();
     const groups = groupsResponse.data.contactGroups;
@@ -52,10 +61,13 @@ app.post("/modify-contacts", async (req, res) => {
     if (!group) {
       return res.status(404).send("Grupo no encontrado.");
     }
-
+    console.log("Investigacion de Grupos");
+    console.log(groups);
+    console.log("El Grupo en cuestion:");
+    console.log(group.resourceName);
     // Añadir el contacto al grupo
     await people.contactGroups.members.modify({
-      resourceName: `contactGroups/${group.resourceName}`,
+      resourceName: `${group.resourceName}`,
       requestBody: {
         resourceNamesToAdd: [contact.data.resourceName],
       },
@@ -71,5 +83,5 @@ app.post("/modify-contacts", async (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("App corriendo en http://localhost:3000");
+  console.log("App corriendo en http://localhost:3000/auth");
 });
