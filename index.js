@@ -6,8 +6,6 @@ require("dotenv").config();
 app.use(express.json());
 
 // Configura tu cliente OAuth 2.0 con tus credenciales
-console.log("EEEEL URIII");
-console.log(process.env.REDIRECT_URI);
 const oauth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID, // ID de cliente de Google
   process.env.CLIENT_SECRET, // Secreto de cliente
@@ -52,7 +50,6 @@ app.post("/modify-contacts", async (req, res) => {
     console.log("Contacto creado:");
     console.log(contact.data);
 
-    console.log("HOLA");
     // Listar todos los grupos para encontrar el que coincide con `groupName`
     const groupsResponse = await people.contactGroups.list();
     const groups = groupsResponse.data.contactGroups;
@@ -61,10 +58,6 @@ app.post("/modify-contacts", async (req, res) => {
     if (!group) {
       return res.status(404).send("Grupo no encontrado.");
     }
-    console.log("Investigacion de Grupos");
-    console.log(groups);
-    console.log("El Grupo en cuestion:");
-    console.log(group.resourceName);
     // Añadir el contacto al grupo
     await people.contactGroups.members.modify({
       resourceName: `${group.resourceName}`,
@@ -72,7 +65,6 @@ app.post("/modify-contacts", async (req, res) => {
         resourceNamesToAdd: [contact.data.resourceName],
       },
     });
-
     res.send(
       `Contacto agregado al grupo ${groupName}: ${contact.data.emailAddresses[0].value}`
     );
