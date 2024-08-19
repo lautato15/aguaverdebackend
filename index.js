@@ -3,6 +3,9 @@ const { google } = require("googleapis");
 const app = express();
 require("dotenv").config();
 
+const fs = require("fs");
+const path = require("path");
+
 app.use(express.json());
 
 // Configura tu cliente OAuth 2.0 con tus credenciales
@@ -12,7 +15,45 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.REDIRECT_URI // URI de redirección autorizada
 );
 
+const TOKEN_PATH = path.join("./", "tokens.json");
+
+// Intentar cargar los tokens guardados
+const loadTokens = () => {
+  try {
+    const tokens = fs.readFileSync(TOKEN_PATH, "utf8");
+    return JSON.parse(tokens);
+  } catch (error) {
+    return null;
+  }
+};
+
+// Guardar los tokens en un archivo
+const saveTokens = (tokens) => {
+  fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
+  console.log("POR ACA PASASTE");
+};
+
+// Intentar cargar los tokens al inicio
+const tokens = loadTokens();
+if (tokens) {
+  oauth2Client.setCredentials(tokens);
+
+  // Si el access token está cerca de expirar, intenta refrescarlo
+  oauth2Client.on("tokens", (newTokens) => {
+    if (newTokens.refresh_token) {
+      tokens.refresh_token = newTokens.refresh_token;
+    }
+    tokens.access_token = newTokens.access_token;
+    saveTokens(tokens);
+  });
+}
+
 app.get("/auth", (req, res) => {
+  // Si ya tenemos tokens, no necesitamos volver a autenticar
+  if (oauth2Client.credentials && oauth2Client.credentials.access_token) {
+    return res.redirect("/modify-contacts");
+  }
+
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: ["https://www.googleapis.com/auth/contacts"], // Permisos necesarios
@@ -24,6 +65,10 @@ app.get("/auth/callback", async (req, res) => {
   const code = req.query.code;
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
+
+  // Guardar los tokens obtenidos
+  saveTokens(tokens);
+
   res.redirect("/modify-contacts");
 });
 
