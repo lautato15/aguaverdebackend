@@ -30,7 +30,7 @@ const loadTokens = () => {
 // Guardar los tokens en un archivo
 const saveTokens = (tokens) => {
   fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
-  console.log("POR ACA PASASTE");
+  console.log("Se almacenaron los Tokens!");
 };
 
 // Intentar cargar los tokens al inicio
@@ -73,8 +73,6 @@ app.get("/auth/callback", async (req, res) => {
 });
 
 app.post("/modify-contacts", async (req, res) => {
-  console.log("ACA");
-  console.log(req.body);
   const { email, groupName } = req.body;
 
   try {
@@ -93,7 +91,7 @@ app.post("/modify-contacts", async (req, res) => {
 
     // Verificar si el contacto se creó exitosamente
     console.log("Contacto creado:");
-    console.log(contact.data);
+    console.log(contact.data.emailAddresses[0].value);
 
     // Listar todos los grupos para encontrar el que coincide con `groupName`
     const groupsResponse = await people.contactGroups.list();
