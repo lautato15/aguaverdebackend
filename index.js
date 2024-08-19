@@ -8,6 +8,10 @@ const path = require("path");
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Server Aguaverde corriendo listo para recibir contactos...");
+});
+
 // Configura tu cliente OAuth 2.0 con tus credenciales
 const oauth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID, // ID de cliente de Google
@@ -51,7 +55,7 @@ if (tokens) {
 app.get("/auth", (req, res) => {
   // Si ya tenemos tokens, no necesitamos volver a autenticar
   if (oauth2Client.credentials && oauth2Client.credentials.access_token) {
-    return res.redirect("/modify-contacts");
+    return res.redirect("/");
   }
 
   const authUrl = oauth2Client.generateAuthUrl({
@@ -69,7 +73,7 @@ app.get("/auth/callback", async (req, res) => {
   // Guardar los tokens obtenidos
   saveTokens(tokens);
 
-  res.redirect("/modify-contacts");
+  res.redirect("/");
 });
 
 app.post("/modify-contacts", async (req, res) => {
