@@ -76,8 +76,8 @@ app.get("/auth/callback", async (req, res) => {
   res.redirect("/");
 });
 
-app.post("/modify-contacts", async (req, res) => {
-  const { email, groupName } = req.body;
+app.post("/addtolist", async (req, res) => {
+  const { email } = req.body;
 
   try {
     const people = google.people({ version: "v1", auth: oauth2Client });
@@ -97,10 +97,10 @@ app.post("/modify-contacts", async (req, res) => {
     console.log("Contacto creado:");
     console.log(contact.data.emailAddresses[0].value);
 
-    // Listar todos los grupos para encontrar el que coincide con `groupName`
+    // Listar todos los grupos para encontrar el que coincide con `process.env.GROUP_AGUAVERDE`
     const groupsResponse = await people.contactGroups.list();
     const groups = groupsResponse.data.contactGroups;
-    const group = groups.find((g) => g.name === groupName);
+    const group = groups.find((g) => g.name === process.env.GROUP_AGUAVERDE);
 
     if (!group) {
       return res.status(404).send("Grupo no encontrado.");
@@ -113,7 +113,7 @@ app.post("/modify-contacts", async (req, res) => {
       },
     });
     res.send(
-      `Contacto agregado al grupo ${groupName}: ${contact.data.emailAddresses[0].value}`
+      `Contacto agregado al grupo ${process.env.GROUP_AGUAVERDE}: ${contact.data.emailAddresses[0].value}`
     );
   } catch (error) {
     console.error(error);
