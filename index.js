@@ -2,6 +2,7 @@ const express = require("express");
 const { google } = require("googleapis");
 const app = express();
 require("dotenv").config();
+const nodemailer = require("nodemailer");
 
 const fs = require("fs");
 const path = require("path");
@@ -60,7 +61,10 @@ app.get("/auth", (req, res) => {
 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
-    scope: ["https://www.googleapis.com/auth/contacts"], // Permisos necesarios
+    scope: [
+      "https://www.googleapis.com/auth/contacts",
+      "https://www.googleapis.com/auth/gmail.send",
+    ], // Permisos necesarios
   });
   res.redirect(authUrl);
 });
@@ -120,6 +124,43 @@ app.post("/addtolist", async (req, res) => {
     res.status(500).send("Error al modificar los contactos.");
   }
 });
+
+app.post("/contactus", async (req, res) => {
+  const { name, email, message } = req.body;
+
+  try {
+    // Configurar el transporter de Nodemailer reutilizando oauth2Client
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_SENDER, // Tu correo de Gmail
+        pass: process.env.EMAIL_PASSWORD, // La contraseña específica de aplicación generada
+      },
+    });
+
+    // Configurar el contenido del correo electrónico
+    const mailOptions = {
+      from: email, // El correo del usuario que envía el mensaje
+      to: "yendo.colectivo@gmail.com", // El correo donde recibirás los mensajes
+      subject: `Nuevo mensaje de contacto de ${name}`, // Asunto del correo
+      text: message, // Contenido del mensaje
+    };
+
+    // Enviar el correo electrónico
+    await transporter.sendMail(mailOptions);
+    console.log(`Correo enviado por ${email}`);
+
+    res.status(200).send("Mensaje enviado con éxito.");
+  } catch (error) {
+    console.error("Error al enviar el correo:", error);
+    res
+      .status(500)
+      .send(
+        "Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde."
+      );
+  }
+});
+
 
 app.listen(3000, () => {
   console.log("App corriendo en http://localhost:3000/auth");
