@@ -16,6 +16,7 @@ app.get("/", (req, res) => {
 app.use("/", authRoutes);
 app.use("/", contactRoutes);
 
+
 app.listen(3000, () => {
   console.log("App corriendo en http://localhost:3000/auth");
 });
