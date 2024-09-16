@@ -40,13 +40,13 @@ exports.addToList = async (req, res) => {
 };
 
 exports.contactUs = async (req, res) => {
-  const { name, email, message } = req.body;
-
+  const { email, phone, message } = req.body;
+  console.log(email);
   try {
     const mailOptions = {
       from: email,
       to: process.env.EMAIL_RECIPIENT,
-      subject: `Nuevo mensaje de contacto de ${name}`,
+      subject: `Nuevo mensaje de contacto de ${phone}`,
       text: message,
     };
 
