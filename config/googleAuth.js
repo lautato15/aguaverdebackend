@@ -27,12 +27,13 @@ const saveTokens = (tokens) => {
 };
 
 // Intentar cargar los tokens al inicio
-const tokens = loadTokens();
+const tokens = loadTokens() || {};
 if (tokens) {
   oauth2Client.setCredentials(tokens);
 }
 
 oauth2Client.on("tokens", (newTokens) => {
+  console.log("newTokens", newTokens);
   if (newTokens.refresh_token) {
     tokens.refresh_token = newTokens.refresh_token;
   }
