@@ -1,7 +1,6 @@
 const oauth2Client = require("../config/googleAuth");
 
 exports.auth = (req, res) => {
-  console.log("toy en auth");
   if (oauth2Client.credentials && oauth2Client.credentials.access_token) {
     return res.redirect("/");
   }
@@ -14,6 +13,7 @@ exports.auth = (req, res) => {
     ],
   });
 
+  console.log("toy en auth");
   res.redirect(authUrl);
 };
 
