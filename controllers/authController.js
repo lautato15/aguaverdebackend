@@ -13,18 +13,13 @@ exports.auth = (req, res) => {
     ],
   });
 
-  console.log("toy en auth");
   res.redirect(authUrl);
 };
 
 exports.authCallback = async (req, res) => {
-  console.log("toy en auth callback");
-
   const code = req.query.code;
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
-  await saveTokens(tokens); // Asegúrate de que saveTokens esté disponible.
-  console.log("toy en auth callback final");
-
+  await saveTokens(tokens);
   res.redirect("/");
 };
