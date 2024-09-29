@@ -1,4 +1,4 @@
-const oauth2Client = require("../config/googleAuth");
+const { oauth2Client, saveTokens } = require("../config/googleAuth");
 
 exports.auth = (req, res) => {
   if (oauth2Client.credentials && oauth2Client.credentials.access_token) {
@@ -13,18 +13,13 @@ exports.auth = (req, res) => {
     ],
   });
 
-  console.log("toy en auth");
   res.redirect(authUrl);
 };
 
 exports.authCallback = async (req, res) => {
-  console.log("toy en auth callback", req.query.code);
-
   const code = req.query.code;
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
-  // saveTokens(tokens);
-  console.log("toy en auth callback final");
-
+  await saveTokens(tokens);
   res.redirect("/");
 };

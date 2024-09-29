@@ -1,11 +1,11 @@
 const { google } = require("googleapis");
-const oauth2Client = require("../config/googleAuth");
+const { oauth2Client } = require("../config/googleAuth");
 const transporter = require("../config/mailTransporter");
 
 exports.addToList = async (req, res) => {
-    console.log(req.body);
-    const { email } = req.body;
-  
+  console.log(req.body);
+  const { email } = req.body;
+
   try {
     const people = google.people({ version: "v1", auth: oauth2Client });
 
@@ -46,8 +46,11 @@ exports.contactUs = async (req, res) => {
     const mailOptions = {
       from: email,
       to: process.env.EMAIL_RECIPIENT,
-      subject: `Nuevo mensaje de contacto de ${phone}`,
-      text: message,
+      subject: `Nuevo mensaje de contacto ${email}`,
+      text: `
+Telefono: ${phone} 
+Mail: ${email} 
+Mensaje: ${message}`,
     };
 
     await transporter.sendMail(mailOptions);
