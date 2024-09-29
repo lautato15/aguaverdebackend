@@ -1,11 +1,11 @@
 const { google } = require("googleapis");
-const oauth2Client = require("../config/googleAuth");
+const { oauth2Client } = require("../config/googleAuth");
 const transporter = require("../config/mailTransporter");
 
 exports.addToList = async (req, res) => {
-    console.log(req.body);
-    const { email } = req.body;
-  
+  console.log(req.body);
+  const { email } = req.body;
+
   try {
     const people = google.people({ version: "v1", auth: oauth2Client });
 
