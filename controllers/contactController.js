@@ -1,11 +1,32 @@
 const { google } = require("googleapis");
 const { oauth2Client } = require("../config/googleAuth");
 const transporter = require("../config/mailTransporter");
+const dns = require("dns").promises; // Importar el módulo dns
+
+// Función para validar el dominio del correo electrónico
+const validateEmailDomain = async (email) => {
+  const domain = email.split("@")[1]; // Extrae el dominio del correo
+  try {
+    const mxRecords = await dns.resolveMx(domain);
+    return mxRecords && mxRecords.length > 0;
+  } catch (error) {
+    console.error(`Error resolving MX records for domain ${domain}:`, error);
+    return false; // El dominio no tiene registros MX válidos
+  }
+};
 
 exports.addToList = async (req, res) => {
   console.log(req.body);
   const { email } = req.body;
-
+  console.log("EL MAIL ES:");
+  console.log(email);
+  // Validar el dominio del correo electrónico
+  const isValidDomain = await validateEmailDomain(email);
+  if (!isValidDomain) {
+    return res
+      .status(400)
+      .send("El dominio del correo electrónico no es válido.");
+  }
   try {
     const people = google.people({ version: "v1", auth: oauth2Client });
 
