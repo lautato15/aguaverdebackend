@@ -18,8 +18,6 @@ const validateEmailDomain = async (email) => {
 exports.addToList = async (req, res) => {
   console.log(req.body);
   const { email } = req.body;
-  console.log("EL MAIL ES:");
-  console.log(email);
   // Validar el dominio del correo electrónico
   const isValidDomain = await validateEmailDomain(email);
   if (!isValidDomain) {
