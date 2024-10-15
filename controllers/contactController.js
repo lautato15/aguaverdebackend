@@ -54,7 +54,7 @@ exports.addToList = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error al modificar los contactos.");
+    res.status(500).send("Error al modificar los contactos: ", error);
   }
 };
 
