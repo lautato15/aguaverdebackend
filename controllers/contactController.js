@@ -59,13 +59,16 @@ exports.addToList = async (req, res) => {
 };
 
 exports.contactUs = async (req, res) => {
-  const { name, email, phone, message, subject } = req.body;
+  const { name, email, phone, message, subject, pathname } = req.body;
   console.log("DATOS RECIBIDOS: ", req.body);
   console.log("Procesando...");
   try {
     const mailOptions = {
       from: name,
-      to: process.env.EMAIL_RECIPIENT,
+      to:
+        pathname !== "/realestate"
+          ? process.env.EMAIL_RECIPIENT
+          : process.env.EMAIL_RECIPIENT_ALT,
       subject: subject,
       text: `
 Nombre: ${name} 
