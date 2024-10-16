@@ -61,6 +61,7 @@ exports.addToList = async (req, res) => {
 exports.contactUs = async (req, res) => {
   const { name, email, phone, message, subject } = req.body;
   console.log("DATOS RECIBIDOS: ", req.body);
+  console.log("Procesando...");
   try {
     const mailOptions = {
       from: name,
